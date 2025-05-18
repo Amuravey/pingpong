@@ -1,76 +1,47 @@
 from pygame import *
-
+import random
 
 win_up = 500
 win_line = 700
 
-# Класс для спрайтов игры
-class GameSprite(sprite.Sprite):
-    def __init__(self, player_image, player_x, player_y, player_speed):
-        super().__init__()
-        self.image = transform.scale(image.load(player_image), (65, 65))
-        self.speed = player_speed
-        self.rect = self.image.get_rect()
-        self.rect.x = player_x 
-        self.rect.y = player_y 
-    def reset(self):
-        window.blit(self.image, (self.rect.x, self.rect.y)) 
+lostb = 0
+lostr = 0
+last_hit = None
 
+#Остальной код GameSprite, Player, Player2, Enemy, Boost остается без изменений
 
-class Player(GameSprite):
+class Enemy(GameSprite):
+    def __init__(self, player_image, player_x, player_y, player_speed, width=30, height=30):
+        super().__init__(player_image, player_x, player_y, player_speed, width, height)
+        self.speed_x = 1
+        self.speed_y = 1
+
     def update(self):
-        keys = key.get_pressed() 
-        if keys[K_LEFT] and self.rect.x > 0: 
-            self.rect.x -= self.speed
-        if keys[K_RIGHT] and self.rect.x < win_line - 65: 
-            self.rect.x += self.speed
+        global blue_c, red_c
+
+        self.rect.x += self.speed_x
+        self.rect.y += self.speed_y
 
 
-class Player2(GameSprite):
-    def update(self):
-        keys = key.get_pressed()
-        if keys[K_a] and self.rect.x > 0: 
-            self.rect.x -= self.speed
-        if keys[K_d] and self.rect.x < win_line - 65:
-            self.rect.x += self.speed
+        if self.rect.y <= 0:
+            time.delay(50)
+            self.rect.x = win_line // 2
+            self.rect.y = win_up // 2
+            self.speed_y *= -1
+            blue_c = True # мяч коснулся верхней границы, теперь blue_c = True
+            red_c = False #red_c = False
 
+        if self.rect.y >= win_up - 30:
+            time.delay(50)
+            global lostb
+            lostb += 1
+            self.rect.x = random.randint(0, win_line - 30) #FIX
+            self.rect.y = 350
+            self.speed_y *= -1
+            red_c = True # коснулся нижней границы, red_c = True
+            blue_c = False #blue_c = False
 
-class Enemy(GameSprite):   #Класс врага
-    def update(self):    #Метод для движения
-        global lost
-        if self.rect.y >= 500:   #Если координата у > 500 (спрайт очень низко)
-            self.rect.y = 0  #Перемещаем спрайт наверх
-            self.rect.x = randint(0, win_line - 65) # чтобы не вылетали за край
-            lost = lost + 1
-        else:  #Если координата у < 500 (не достигли низа)
-            self.rect.y += self.speed #Увеличиваем координату (спрайт плывет вниз)
-
-
-blueP = Player('palkablue2.png', 250, 400, 6 )
-redP = Player2('redpalka.png', 250, 50, 6)
-
-ball = Enemy('')
-
-window = display.set_mode((win_line, win_up))
-display.set_caption('pingpong')
-backgrond = transform.scale(
-    image.load('pole.jpg'), (win_line, win_up)
-    )
-
-
-clock = time.Clock()
-FPS = 90
-
-game = True
-while game:    
-    for e in event.get():
-        if e.type == QUIT:
-            game = False
-
-    window.blit(backgrond, (0,0))
-    blueP.update()
-    blueP.reset()
-    redP.update()
-    redP.reset()   
-    display.update()
-    clock.tick(FPS)
+        if self.rect.x <= 0:
+            self.speed_x *= -1
+        if self.rect.x >= win_line - 30:
+            self.speed_x *= -1
