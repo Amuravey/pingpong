@@ -117,14 +117,14 @@ class Boost(GameSprite):
          super().__init__(player_image, player_x, player_y, 0, width, height)
 
 
-blueP = Player('palkablue2.png', 250, 400, 6, 100, 50)
+blueP = Player('palkablue2.png', 250, 400, 6, 100, 20)
 
-redP = Player2('redpalka.png', 250, 50, 6, 100, 100)
+redP = Player2('redpalka.png', 250, 50, 6, 100, 20)
 
 ball = Enemy('ball.png', 350, 200, 0, 30, 30)
 
 boost = Boost('boost.png', random.randint(50, 650), random.randint(50, 450), 30, 30) 
-boostspeed = Boost('boostspeed.png', random.randint(50, 650), random.randint(50, 450), 30, 30)
+boostspeed = Boost('boostspeed.jpg', random.randint(50, 650), random.randint(50, 450), 30, 30)
 
 font.init()
 font1 = font.SysFont('Arial', 35)
@@ -185,7 +185,7 @@ while game:
         if sprite.collide_rect(ball, boostspeed):
             ball.speed_x *= 1.2
             ball.speed_y *= 1.2
-            boostspeed = Boost('boostspeed.png', random.randint(50, 650), random.randint(50, 450), 30, 30)
+            boostspeed = Boost('boostspeed.jpg', random.randint(50, 650), random.randint(50, 450), 30, 30)
 
         if lostb >= 3:
             finish = True
